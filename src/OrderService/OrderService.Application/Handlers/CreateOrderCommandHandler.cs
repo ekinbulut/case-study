@@ -65,7 +65,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Ord
             
             await retryPolicy.ExecuteAsync(async () =>
             {
-                await _eventBus.PublishAsync(orderCreatedEvent, RabbitMqConstants.OrderCreatedRoutingKey);
+                await _eventBus.PublishAsync(orderCreatedEvent, RabbitMqConstants.OrderCreatedRoutingKey, RabbitMqConstants.StockQueue);
             });
         }
         catch (Exception ex)

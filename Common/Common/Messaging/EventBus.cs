@@ -51,10 +51,25 @@ namespace Common.Messaging
                 autoDelete: false);
         }
 
-        public async Task PublishAsync<T>(T @event, string routingKey)
+        public async Task PublishAsync<T>(T @event, string routingKey, string queueName)
         {
             try
             {
+                // Optionally, declare a queue with a name based on the routing key.
+                // You can also use a predefined queue name if you prefer.
+                await _channel.QueueDeclareAsync(
+                    queue: queueName,           // Queue name
+                    durable: true,               // Queue durability
+                    exclusive: false,            // Not exclusive
+                    autoDelete: false,           // Do not auto-delete
+                    arguments: null);
+                
+                // Bind the declared queue to the exchange using the routing key.
+                await _channel.QueueBindAsync(
+                    queue: queueName,
+                    exchange: RabbitMqConstants.ExchangeName,
+                    routingKey: routingKey);
+                
                 var message = JsonSerializer.Serialize(@event);
                 var body = Encoding.UTF8.GetBytes(message);
 

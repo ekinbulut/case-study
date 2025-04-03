@@ -34,7 +34,7 @@ public class GetOrderQueryHandler : IRequestHandler<GetOrderQuery, OrderResult>
             Id = order.Id,
             OrderDate = order.OrderDate,
             CustomerId = order.CustomerId,
-            TotalAmount = order.TotalAmount,
+            TotalAmount = order.Items.Select(x=> x.Quantity * x.UnitPrice).Sum(),
             Status = order.Status.ToString()
         };
 
