@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace OrderService.Domain.Interfaces;
+namespace Common.Infrastructure;
 
 public interface IUnitOfWork<TContext> where TContext : DbContext
 {

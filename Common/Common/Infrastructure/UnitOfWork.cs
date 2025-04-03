@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using OrderService.Domain.Interfaces;
 
-namespace OrderService.Infrastructure.Repositories;
+namespace Common.Infrastructure;
 
 /// <summary>
 /// A generic Unit of Work implementation that supports retrieving repository instances.

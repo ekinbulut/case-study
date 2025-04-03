@@ -1,3 +1,4 @@
+using Common.Infrastructure;
 using Common.Messaging;
 using MediatR;
 using OrderService.Application.DTOs;

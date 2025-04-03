@@ -1,4 +1,5 @@
 using Common.Exceptions;
+using Common.Infrastructure;
 using Common.Messaging;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

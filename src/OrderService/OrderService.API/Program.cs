@@ -1,4 +1,5 @@
 using Common.Extensions;
+using Common.Infrastructure;
 using OrderService.Application.Handlers;
 using OrderService.Domain.Interfaces;
 using OrderService.Infrastructure.Data;
