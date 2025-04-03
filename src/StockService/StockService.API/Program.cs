@@ -1,6 +1,7 @@
 using Common.Extensions;
 using Common.Infrastructure;
 using Scalar.AspNetCore;
+using StockService.Application;
 using StockService.Application.Handlers;
 using StockService.Domain.Interfaces;
 using StockService.Infrastructure.Data;
@@ -24,6 +25,8 @@ public class Program
 
         builder.Services.AddTransient<IStockRepository, StockRepository>();
         builder.Services.AddScoped<IUnitOfWork<StockDbContext>, UnitOfWork<StockDbContext>>();
+
+        builder.Services.AddHostedService<StockBackgroundService>();
         
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();

@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Common.Exceptions;
+using RabbitMQ.Client.Events;
 
 namespace Common.Messaging
 {
@@ -85,6 +86,38 @@ namespace Common.Messaging
             }
         }
 
+        public async Task SubscribeAsync<T>(string queueName, string routingKey, Func<T, Task> onMessage)
+        {
+            // Declare the queue and bind it to the exchange with the provided routing key.
+            await _channel.QueueDeclareAsync(
+                queue: queueName,
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+
+            await _channel.QueueBindAsync(
+                queue: queueName,
+                exchange: RabbitMqConstants.ExchangeName,
+                routingKey: routingKey);
+
+            // Create an asynchronous consumer.
+            var consumer = new AsyncEventingBasicConsumer(_channel);
+            consumer.ReceivedAsync += async (model, ea) =>
+            {
+                var body = ea.Body.ToArray();
+                var message = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(body));
+
+                // Process the received message.
+                await onMessage(message);
+
+                // Acknowledge the message.
+                //await _channel.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false);
+            };
+
+            // Start consuming the queue.
+            await _channel.BasicConsumeAsync(queue: queueName, autoAck: false, consumer: consumer);
+        }
         public async ValueTask DisposeAsync()
         {
             await _channel.CloseAsync();
