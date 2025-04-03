@@ -17,14 +17,24 @@ namespace Common.Extensions
         /// <param name="rabbitMqUsername">The RabbitMQ username.</param>
         /// <param name="rabbitMqPassword">The RabbitMQ password.</param>
         /// <returns>The service collection.</returns>
-        public static IServiceCollection AddCommonServices(this IServiceCollection services, string rabbitMqHostname,
-            string rabbitMqUsername, string rabbitMqPassword)
+        public static IServiceCollection AddCommonServices(this IServiceCollection services, IConfiguration configuration)
         {
+            
+            var rabbitMqSection = configuration.GetSection("RabbitMQ");
+            var hostname = rabbitMqSection["Hostname"];
+            var username = rabbitMqSection["Username"];
+            var password = rabbitMqSection["Password"];
+            
+            
             services.AddSingleton<EventBus>(sp =>
             {
                 // Create EventBus synchronously by waiting for the async creation
-                return EventBus.CreateAsync(rabbitMqHostname, rabbitMqUsername, rabbitMqPassword).GetAwaiter()
+                var eventbus = EventBus.CreateAsync(hostname, username, password).GetAwaiter()
                     .GetResult();
+                
+                eventbus.DeclareExchangeAsync().GetAwaiter().GetResult();
+                
+                return eventbus;
             });
 
             return services;

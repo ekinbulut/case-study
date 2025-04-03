@@ -13,6 +13,8 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+
+        builder.Services.AddCommonServices(builder.Configuration);
         
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateOrderCommandHandler).Assembly));
         builder.Services.AddEntityFramework<OrderDbContext>(builder.Configuration);
@@ -36,7 +38,6 @@ public class Program
 
         app.UseErrorHandlingMiddleware();
 
-        
         app.UseHttpsRedirection();
         app.MapControllers();
         app.Run();

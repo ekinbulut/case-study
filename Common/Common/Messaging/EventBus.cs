@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.Messaging
 {
-    public class EventBus : IDisposable
+    public class EventBus : IAsyncDisposable
     {
         private readonly IConnection _connection;
         private readonly IChannel _channel;
@@ -33,40 +33,39 @@ namespace Common.Messaging
             return new EventBus(connection, channel);
         }
         
-        public async Task DeclareExchange()
+        public async Task DeclareExchangeAsync()
         {
-            // Declare the main exchange
+            // Declare the main exchange asynchronously.
             await _channel.ExchangeDeclareAsync(
                 exchange: RabbitMqConstants.ExchangeName,
                 type: ExchangeType.Topic,
                 durable: true,
                 autoDelete: false);
 
-            // Optionally, declare a dead letter exchange for handling failed messages
+            // Declare the dead letter exchange asynchronously.
             await _channel.ExchangeDeclareAsync(
                 exchange: RabbitMqConstants.DeadLetterExchange,
                 type: ExchangeType.Direct,
                 durable: true,
                 autoDelete: false);
         }
-        
 
-        public async Task Publish<T>(T @event, string routingKey)
+        public async Task PublishAsync<T>(T @event, string routingKey)
         {
             var message = JsonSerializer.Serialize(@event);
             var body = Encoding.UTF8.GetBytes(message);
 
-
+            // Publish the message asynchronously.
             await _channel.BasicPublishAsync(
                 exchange: RabbitMqConstants.ExchangeName,
                 routingKey: routingKey,
                 body: body);
         }
 
-        public async void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            await _channel?.CloseAsync();
-            await _connection?.CloseAsync();
+            await _channel.CloseAsync();
+            await _connection.CloseAsync();
         }
     }
 }
