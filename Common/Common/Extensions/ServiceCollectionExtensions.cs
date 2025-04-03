@@ -73,5 +73,10 @@ namespace Common.Extensions
         {
             return builder.UseMiddleware<ErrorHandlingMiddleware>();
         }
+        
+        public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<LoggingMiddleware>();
+        }
     }
 }

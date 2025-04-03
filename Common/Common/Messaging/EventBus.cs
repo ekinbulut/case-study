@@ -3,6 +3,7 @@ using System;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Common.Exceptions;
 
 namespace Common.Messaging
 {
@@ -52,14 +53,21 @@ namespace Common.Messaging
 
         public async Task PublishAsync<T>(T @event, string routingKey)
         {
-            var message = JsonSerializer.Serialize(@event);
-            var body = Encoding.UTF8.GetBytes(message);
+            try
+            {
+                var message = JsonSerializer.Serialize(@event);
+                var body = Encoding.UTF8.GetBytes(message);
 
-            // Publish the message asynchronously.
-            await _channel.BasicPublishAsync(
-                exchange: RabbitMqConstants.ExchangeName,
-                routingKey: routingKey,
-                body: body);
+                // Publish the message asynchronously.
+                await _channel.BasicPublishAsync(
+                    exchange: RabbitMqConstants.ExchangeName,
+                    routingKey: routingKey,
+                    body: body);
+            }
+            catch (MessaagingException e)
+            {
+                throw new MessaagingException("Failed to publish message to RabbitMQ.", e);
+            }
         }
 
         public async ValueTask DisposeAsync()

@@ -37,6 +37,7 @@ public class Program
         }
 
         app.UseErrorHandlingMiddleware();
+        app.UseRequestLogging();
 
         app.UseHttpsRedirection();
         app.MapControllers();

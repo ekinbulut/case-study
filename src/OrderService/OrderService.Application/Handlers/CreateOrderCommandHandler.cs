@@ -1,3 +1,4 @@
+using Common.Exceptions;
 using Common.Messaging;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using OrderService.Domain.Entities;
 using OrderService.Domain.Events;
 using OrderService.Domain.Interfaces;
 using OrderService.Infrastructure.Data;
+using Polly;
 
 namespace OrderService.Application.Handlers;
 
@@ -58,7 +60,14 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Ord
                 TotalAmount = order.TotalAmount
             };
             
-            await _eventBus.PublishAsync(orderCreatedEvent, RabbitMqConstants.OrderCreatedRoutingKey);
+            var retryPolicy = Policy
+                .Handle<MessaagingException>()
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+            
+            await retryPolicy.ExecuteAsync(async () =>
+            {
+                await _eventBus.PublishAsync(orderCreatedEvent, RabbitMqConstants.OrderCreatedRoutingKey);
+            });
         }
         catch (Exception ex)
         {
