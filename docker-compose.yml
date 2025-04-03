@@ -1,0 +1,72 @@
+services:
+  # order-service:
+  #   build: ./OrderService
+  #   ports:
+  #     - "5001:80"
+  #   environment:
+  #     - ConnectionStrings__DefaultConnection=Host=order-db;Database=OrderDB;Username=postgres;Password=yourpassword
+  #     - RabbitMQ__Host=rabbitmq
+  #   depends_on:
+  #     - order-db
+  #     - rabbitmq
+
+  # stock-service:
+  #   build: ./StockService
+  #   ports:
+  #     - "5002:80"
+  #   environment:
+  #     - ConnectionStrings__DefaultConnection=Host=stock-db;Database=StockDB;Username=postgres;Password=yourpassword
+  #     - RabbitMQ__Host=rabbitmq
+  #   depends_on:
+  #     - stock-db
+  #     - rabbitmq
+
+  # notification-service:
+  #   build: ./NotificationService
+  #   ports:
+  #     - "5003:80"
+  #   environment:
+  #     - ConnectionStrings__DefaultConnection=Host=notification-db;Database=NotificationDB;Username=postgres;Password=yourpassword
+  #     - RabbitMQ__Host=rabbitmq
+  #   depends_on:
+  #     - notification-db
+  #     - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  order-db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=yourpassword
+      - POSTGRES_DB=OrderDB
+    ports:
+      - "5433:5432"
+
+  stock-db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=yourpassword
+      - POSTGRES_DB=StockDB
+    ports:
+      - "5434:5432"
+    network_mode: bridge
+
+  notification-db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=yourpassword
+      - POSTGRES_DB=NotificationDB
+    ports:
+      - "5435:5432"
+  orderservice.api:
+    image: orderservice.api
+    build:
+      context: .
+      dockerfile: OrderService.API/Dockerfile
