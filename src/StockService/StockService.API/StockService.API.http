@@ -1,0 +1,20 @@
+@OrderService.API_HostAddress = http://localhost:5067
+
+POST http://localhost:5067/api/v1/stock
+Content-Type: application/json
+
+{
+  "customerId": "3f6cbc83-56ec-450b-b228-97f00539348f",
+  "orderItems": [
+    {
+      "productId": "97f00539-450b-b228-56ec-3f6cbc83348f",
+      "quantity": 2,
+      "unitPrice": 10.5
+    }
+  ]
+}
+
+###
+
+GET http://localhost:5067/api/v1/stock/0195fd1e-c64c-77d9-b3b3-8bbcb9940b8b
+Content-Type: application/json

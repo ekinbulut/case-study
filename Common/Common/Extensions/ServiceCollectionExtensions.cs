@@ -52,6 +52,13 @@ namespace Common.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Registers Entity Framework Core with PostgreSQL support.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
+        /// <typeparam name="TContext"></typeparam>
+        /// <returns></returns>
         public static IServiceCollection AddEntityFramework<TContext>(this IServiceCollection services,
             IConfiguration configuration)
             where TContext : DbContext
@@ -74,6 +81,11 @@ namespace Common.Extensions
             return builder.UseMiddleware<ErrorHandlingMiddleware>();
         }
         
+        /// <summary>
+        /// Registers the request logging middleware.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <returns></returns>
         public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder builder)
         {
             return builder.UseMiddleware<LoggingMiddleware>();
