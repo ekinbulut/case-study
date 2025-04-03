@@ -38,8 +38,8 @@ public class OrderController : ControllerBase
     }
 
     // GET: api/order/{id}
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetOrderById(Guid id)
+    [HttpGet]
+    public async Task<IActionResult> GetOrderById([FromQuery] Guid id)
     {
         var query = new GetOrderQuery { OrderId = id };
         var result = await _mediator.Send(query);

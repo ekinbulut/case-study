@@ -14,13 +14,11 @@ namespace OrderService.Application.Handlers;
 
 public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, OrderResult>
 {
-    private readonly IOrderRepository _orderRepository;
     private readonly IUnitOfWork<OrderDbContext> _unitOfWork;
     private readonly EventBus _eventBus;
 
-    public CreateOrderCommandHandler(IOrderRepository orderRepository, IUnitOfWork<OrderDbContext> unitOfWork, EventBus eventBus)
+    public CreateOrderCommandHandler(IUnitOfWork<OrderDbContext> unitOfWork, EventBus eventBus)
     {
-        _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
         _eventBus = eventBus;
     }
@@ -40,7 +38,8 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Ord
         try
         {
             // Persist the new order.
-            await _orderRepository.AddAsync(order);
+            var orderRepository = _unitOfWork.GetRepository<IOrderRepository>();
+            await orderRepository.AddAsync(order);
             await _unitOfWork.SaveChangesAsync();
         }
         catch (DbUpdateException ex)
