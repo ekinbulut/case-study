@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrderService.API.Requests;
 using OrderService.Application.Commands;
 using OrderService.Application.Queries;
+using OrderService.Domain.Entities;
 
 namespace OrderService.API.Controllers;
 
@@ -29,7 +30,11 @@ public class OrderController : ControllerBase
         var command = new CreateOrderCommand()
         {
             CustomerId = request.CustomerId,
-            TotalAmount = request.TotalAmount
+            Items = request.OrderItems.Select(x=> new OrderItem(){
+                ProductId = x.ProductId,
+                Quantity = x.Quantity,
+                UnitPrice = x.UnitPrice
+            }).ToList()
         };
         
 

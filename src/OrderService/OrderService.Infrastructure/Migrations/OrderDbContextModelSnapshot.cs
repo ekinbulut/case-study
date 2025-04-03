@@ -28,6 +28,9 @@ namespace OrderService.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("BillingAddress")
+                        .HasColumnType("text");
+
                     b.Property<string>("CustomerId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -35,15 +38,52 @@ namespace OrderService.Infrastructure.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("ShippingAddress")
+                        .HasColumnType("text");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("OrderService.Domain.Entities.OrderItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderItem");
+                });
+
+            modelBuilder.Entity("OrderService.Domain.Entities.OrderItem", b =>
+                {
+                    b.HasOne("OrderService.Domain.Entities.Order", null)
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId");
+                });
+
+            modelBuilder.Entity("OrderService.Domain.Entities.Order", b =>
+                {
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

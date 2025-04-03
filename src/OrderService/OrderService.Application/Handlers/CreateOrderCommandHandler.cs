@@ -28,11 +28,10 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Ord
         // Create a new Order entity with initial values.
         var order = new Order
         {
-            Id = Guid.NewGuid(),
             OrderDate = DateTime.UtcNow,
             CustomerId = request.CustomerId,
-            TotalAmount = request.TotalAmount,
-            Status = OrderStatus.Pending
+            Status = OrderStatus.Pending,
+            Items = request.Items
         };
 
         try
@@ -56,7 +55,8 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Ord
                 OrderId = order.Id,
                 OrderDate = order.OrderDate,
                 CustomerId = order.CustomerId,
-                TotalAmount = order.TotalAmount
+                TotalAmount = order.TotalAmount,
+                Items = order.Items
             };
             
             var retryPolicy = Policy
