@@ -7,7 +7,7 @@ services:
     ports:
       - "5066:8080"
     environment:
-      - ConnectionStrings__DefaultConnection=Host=order-db;Database=OrderDB;Username=postgres;Password=yourpassword
+      - ConnectionStrings__DefaultConnection=Host=order-db;Port=5432;Database=OrderDB;Username=postgres;Password=yourpassword
       - RabbitMQ__Host=rabbitmq
     depends_on:
       - order-db
@@ -21,7 +21,7 @@ services:
     ports:
       - "5067:8080"
     environment:
-      - ConnectionStrings__DefaultConnection=Host=stock-db;Database=StockDB;Username=postgres;Password=yourpassword
+      - ConnectionStrings__DefaultConnection=Host=stock-db;Port=5432;Database=StockDB;Username=postgres;Password=yourpassword
       - RabbitMQ__Host=rabbitmq
     depends_on:
       - stock-db
@@ -35,7 +35,7 @@ services:
     ports:
       - "5065:80"
     environment:
-      - ConnectionStrings__DefaultConnection=Host=notification-db;Database=NotificationDB;Username=postgres;Password=yourpassword
+      - ConnectionStrings__DefaultConnection=Host=notification-db;Port=5432;Database=NotificationDB;Username=postgres;Password=yourpassword
       - RabbitMQ__Host=rabbitmq
     depends_on:
       - notification-db
