@@ -28,6 +28,8 @@ public class Program
         
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
+        builder.Services.AddSwaggerGen();
+
 
         var app = builder.Build();
         
@@ -43,7 +45,14 @@ public class Program
             app.MapOpenApi();
         }
 
+        app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
         app.MapScalarApiReference();
+        app.UseSwagger();
+        app.UseSwaggerUI(options => // UseSwaggerUI is called only in Development.
+        {
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+            options.RoutePrefix = string.Empty;
+        });
 
         
         app.UseErrorHandlingMiddleware();

@@ -33,7 +33,7 @@ services:
       dockerfile: src/NotificationService/NotificationService.API/Dockerfile
     container_name: notification-service
     ports:
-      - "5065:80"
+      - "5065:8080"
     environment:
       - ConnectionStrings__DefaultConnection=Host=notification-db;Port=5432;Database=NotificationDB;Username=postgres;Password=yourpassword
       - RabbitMQ__Host=rabbitmq
