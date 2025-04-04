@@ -8,12 +8,15 @@ namespace Common.Messaging
         // Queue Names
         public const string OrderQueue = "order-queue";
         public const string StockQueue = "stock-queue";
+        public const string StockQueueUpdated = "stock-queue-updated";
+
         public const string NotificationQueue = "notification-queue";
 
         // Routing Keys
         public const string OrderCreatedRoutingKey = "order.created";
         public const string OrderCancelledRoutingKey = "order.cancelled";
         public const string StockUpdatedRoutingKey = "stock.updated";
+        public const string StockUpdateRoutingKey = "stock.update";
         public const string NotificationRoutingKey = "notification.*";
 
         // Dead Letter Configuration

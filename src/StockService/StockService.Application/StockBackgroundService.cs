@@ -55,6 +55,10 @@ public class StockBackgroundService : BackgroundService
                         var stock = await repository.GetByIdAsync(item.ProductId);
                         if(stock == null) continue;
 
+                        if (stock.Quantity < item.Quantity)
+                        {
+                            continue;   
+                        }
                         //update the stock
                         stock.Quantity -= item.Quantity;
                         stock.UpdatedAt = DateTime.UtcNow;
@@ -71,10 +75,10 @@ public class StockBackgroundService : BackgroundService
                             await _eventBus.PublishAsync(new StockUpdatedEvent()
                             {
                                 ProductId = item.ProductId,
-                                Quantity = stock.Quantity,
-                                UnitPrice = stock.UnitPrice,
-                                CreatedAt = DateTime.Now,
-                            }, RabbitMqConstants.StockUpdatedRoutingKey, RabbitMqConstants.StockQueue);
+                                Quantity = item.Quantity,
+                                UnitPrice = item.UnitPrice,
+                                CreatedAt = DateTime.UtcNow,
+                            }, RabbitMqConstants.StockUpdatedRoutingKey, RabbitMqConstants.StockQueueUpdated);
                         });
                         
                     }

@@ -8,7 +8,7 @@ Content-Type: application/json
   "orderItems": [
     {
       "productId": "737186b5-e62c-4329-a64c-a4386fbdc6d7",
-      "quantity": 2,
+      "quantity": 10,
       "unitPrice": 30.99
     }
   ]

@@ -27,6 +27,7 @@ public class Program
         builder.Services.AddScoped<IUnitOfWork<StockDbContext>, UnitOfWork<StockDbContext>>();
 
         builder.Services.AddHostedService<StockBackgroundService>();
+        builder.Services.AddHostedService<StockUpdateBackgroundService>();
         
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();

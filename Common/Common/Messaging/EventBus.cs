@@ -26,7 +26,6 @@ namespace Common.Messaging
                 HostName = hostname,
                 UserName = username,
                 Password = password,
-                
             };
 
             var connection = await factory.CreateConnectionAsync();
@@ -34,7 +33,7 @@ namespace Common.Messaging
 
             return new EventBus(connection, channel);
         }
-        
+
         public async Task DeclareExchangeAsync()
         {
             // Declare the main exchange asynchronously.
@@ -59,18 +58,18 @@ namespace Common.Messaging
                 // Optionally, declare a queue with a name based on the routing key.
                 // You can also use a predefined queue name if you prefer.
                 await _channel.QueueDeclareAsync(
-                    queue: queueName,           // Queue name
-                    durable: true,               // Queue durability
-                    exclusive: false,            // Not exclusive
-                    autoDelete: false,           // Do not auto-delete
+                    queue: queueName, // Queue name
+                    durable: true, // Queue durability
+                    exclusive: false, // Not exclusive
+                    autoDelete: false, // Do not auto-delete
                     arguments: null);
-                
+
                 // Bind the declared queue to the exchange using the routing key.
                 await _channel.QueueBindAsync(
                     queue: queueName,
                     exchange: RabbitMqConstants.ExchangeName,
                     routingKey: routingKey);
-                
+
                 var message = JsonSerializer.Serialize(@event);
                 var body = Encoding.UTF8.GetBytes(message);
 
@@ -105,19 +104,21 @@ namespace Common.Messaging
             var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.ReceivedAsync += async (model, ea) =>
             {
-                if (ea.RoutingKey == routingKey)
+                try
                 {
                     var body = ea.Body.ToArray();
                     var message = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(body));
 
-                    // Process the received message.
-                    await onMessage(message);
+                    var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                    await onMessage(message).WaitAsync(cts.Token);
 
-                    // Acknowledge the message.
                     await _channel.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false);
                 }
-
-                await _channel.BasicNackAsync(deliveryTag: ea.DeliveryTag, multiple: false, requeue: true);
+                catch (Exception ex)
+                {
+                    // If handling fails, NACK and optionally requeue.
+                    await _channel.BasicNackAsync(deliveryTag: ea.DeliveryTag, multiple: false, requeue: true);
+                }
             };
 
             // Start consuming the queue.

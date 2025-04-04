@@ -35,6 +35,42 @@ public class StockController : ControllerBase
         await _mediator.Send(command);
         return Created();
     }
+    
+    [HttpPut]
+    public async Task<IActionResult> Put([FromBody] UpdateStockRequest request)
+    {
+        if (request == null)
+        {
+            return BadRequest();
+        }
+        
+        var command = new UpdateStockCommand()
+        {
+            ProductId = request.ProductId,
+            Quantity = request.Quantity,
+            Price = request.Price
+        };
+        
+        var result = await _mediator.Send(command);
+        return result ? Ok() : NotFound();
+    }
+    
+    [HttpPut("bulk")]
+    public async Task<IActionResult> Put([FromBody] UpdateStockBulkRequest request)
+    {
+        if (request == null)
+        {
+            return BadRequest();
+        }
+        
+        var command = new UpdateStockBulkCommand()
+        {
+            Prodcuts = request.Products
+        };
+        
+        var result = await _mediator.Send(command);
+        return result ? Ok() : NotFound();
+    }
 
     // GET: api/order/{id}
     [HttpGet("{id}")]
