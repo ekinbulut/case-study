@@ -6,6 +6,7 @@ using NotificationService.Domain.Interfaces;
 using NotificationService.Infrastructure.Data;
 using NotificationService.Infrastructure.Repositories;
 using Scalar.AspNetCore;
+using ServiceCollectionExtensions = Common.Extensions.ServiceCollectionExtensions;
 
 namespace NotificationService.API;
 
@@ -32,6 +33,13 @@ public class Program
         builder.Services.AddOpenApi();
 
         var app = builder.Build();
+        
+        using (var scope = app.Services.CreateScope())
+        {
+            var migrationService = scope.ServiceProvider.GetRequiredService<ServiceCollectionExtensions.IDatabaseMigrationService<NotificationDbContext>>();
+            migrationService.ApplyMigrations();
+        }
+        
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())

@@ -1,23 +1,29 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 5065
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["OrderService.API/OrderService.API.csproj", "OrderService.API/"]
-RUN dotnet restore "OrderService.API/OrderService.API.csproj"
-COPY . .
-WORKDIR "/src/OrderService.API"
-RUN dotnet build "OrderService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+COPY ["src/NotificationService/NotificationService.API/NotificationService.API.csproj", "NotificationService.API/"]
+COPY ["src/NotificationService/NotificationService.Domain/NotificationService.Domain.csproj", "NotificationService.Domain/"]
+COPY ["src/NotificationService/NotificationService.Infrastructure/NotificationService.Infrastructure.csproj", "NotificationService.Infrastructure/"]
+COPY ["src/NotificationService/NotificationService.Application/NotificationService.Application.csproj", "NotificationService.Application/"]
+COPY ["src/Common/Common/Common.csproj", "/Common/Common/"]
+
+RUN dotnet restore "NotificationService.API/NotificationService.API.csproj"
+# Copy the entire project files
+COPY src/NotificationService/ NotificationService/
+COPY src/Common/ Common/
+
+WORKDIR "/src/NotificationService/NotificationService.API"
+RUN dotnet build "NotificationService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "OrderService.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "NotificationService.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=true
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "OrderService.API.dll"]
+ENTRYPOINT ["dotnet", "NotificationService.API.dll"]

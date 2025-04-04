@@ -6,6 +6,7 @@ using StockService.Application.Handlers;
 using StockService.Domain.Interfaces;
 using StockService.Infrastructure.Data;
 using StockService.Infrastructure.Repositories;
+using ServiceCollectionExtensions = Common.Extensions.ServiceCollectionExtensions;
 
 namespace StockService.API;
 
@@ -33,6 +34,12 @@ public class Program
         builder.Services.AddOpenApi();
 
         var app = builder.Build();
+        
+        using (var scope = app.Services.CreateScope())
+        {
+            var migrationService = scope.ServiceProvider.GetRequiredService<ServiceCollectionExtensions.IDatabaseMigrationService<StockDbContext>>();
+            migrationService.ApplyMigrations();
+        }
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())

@@ -71,6 +71,8 @@ namespace Common.Extensions
                     npgsqlOptions => 
                         npgsqlOptions.MigrationsAssembly(typeof(TContext).Assembly.FullName)));
 
+            services.AddSingleton<IDatabaseMigrationService<TContext>, DatabaseMigrationService<TContext>>();
+            
             return services;
         }
 
@@ -89,6 +91,29 @@ namespace Common.Extensions
         public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder builder)
         {
             return builder.UseMiddleware<LoggingMiddleware>();
+        }
+        
+        
+        public interface IDatabaseMigrationService<TContext> where TContext : DbContext
+        {
+            void ApplyMigrations();
+        }
+
+        public class DatabaseMigrationService<TContext> : IDatabaseMigrationService<TContext> where TContext : DbContext
+        {
+            private readonly IServiceProvider _serviceProvider;
+
+            public DatabaseMigrationService(IServiceProvider serviceProvider)
+            {
+                _serviceProvider = serviceProvider;
+            }
+
+            public void ApplyMigrations()
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<TContext>();
+                context.Database.Migrate();
+            }
         }
     }
 }

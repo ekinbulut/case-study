@@ -3,6 +3,7 @@ services:
     build:
       context: .  # The root directory containing all projects
       dockerfile: src/OrderService/OrderService.API/Dockerfile
+    container_name: order-service
     ports:
       - "5066:8080"
     environment:
@@ -16,6 +17,7 @@ services:
     build:
       context: .  # The root directory containing all projects
       dockerfile: src/StockService/StockService.API/Dockerfile
+    container_name: stock-service
     ports:
       - "5067:8080"
     environment:
@@ -25,16 +27,19 @@ services:
       - stock-db
       - rabbitmq
 
-  # notification-service:
-  #   build: ./NotificationService
-  #   ports:
-  #     - "5003:80"
-  #   environment:
-  #     - ConnectionStrings__DefaultConnection=Host=notification-db;Database=NotificationDB;Username=postgres;Password=yourpassword
-  #     - RabbitMQ__Host=rabbitmq
-  #   depends_on:
-  #     - notification-db
-  #     - rabbitmq
+  notification-service:
+    build: 
+      context: .
+      dockerfile: src/NotificationService/NotificationService.API/Dockerfile
+    container_name: notification-service
+    ports:
+      - "5065:80"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=notification-db;Database=NotificationDB;Username=postgres;Password=yourpassword
+      - RabbitMQ__Host=rabbitmq
+    depends_on:
+      - notification-db
+      - rabbitmq
 
   rabbitmq:
     container_name: rabbitmq
@@ -45,6 +50,7 @@ services:
 
   order-db:
     image: postgres:13
+    container_name: order-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=yourpassword
@@ -54,6 +60,7 @@ services:
 
   stock-db:
     image: postgres:13
+    container_name: stock-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=yourpassword
@@ -63,15 +70,10 @@ services:
 
   notification-db:
     image: postgres:13
+    container_name: notification-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=yourpassword
       - POSTGRES_DB=NotificationDB
     ports:
       - "5435:5432"
-    network_mode: bridge
-  orderservice.api:
-    image: orderservice.api
-    build:
-      context: .
-      dockerfile: OrderService.API/Dockerfile

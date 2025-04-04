@@ -5,6 +5,7 @@ using OrderService.Domain.Interfaces;
 using OrderService.Infrastructure.Data;
 using OrderService.Infrastructure.Repositories;
 using Scalar.AspNetCore;
+using ServiceCollectionExtensions = Common.Extensions.ServiceCollectionExtensions;
 
 namespace OrderService.API;
 
@@ -29,6 +30,12 @@ public class Program
         builder.Services.AddOpenApi();
 
         var app = builder.Build();
+        
+        using (var scope = app.Services.CreateScope())
+        {
+            var migrationService = scope.ServiceProvider.GetRequiredService<ServiceCollectionExtensions.IDatabaseMigrationService<OrderDbContext>>();
+            migrationService.ApplyMigrations();
+        }
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
