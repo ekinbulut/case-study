@@ -4,9 +4,7 @@ POST http://localhost:5065/api/v1/notification
 Content-Type: application/json
 
 {
-  "userId": "3f6cbc83-56ec-450b-b228-97f00539348f",
-  "message": "test message",
-  "notificationType": "OrderCreated"
+  "Id": "3f6cbc83-56ec-450b-b228-97f00539348f"
 }
 
 ###

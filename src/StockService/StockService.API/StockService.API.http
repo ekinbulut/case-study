@@ -1,5 +1,3 @@
-@OrderService.API_HostAddress = http://localhost:5067
-
 POST http://localhost:5067/api/v1/stock
 Content-Type: application/json
 
