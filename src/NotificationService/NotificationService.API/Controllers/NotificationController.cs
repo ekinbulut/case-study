@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NotificationService.API.Requests;
 using NotificationService.Application.Commands;
+using NotificationService.Application.Queries;
 
 namespace NotificationService.API.Controllers;
 
@@ -31,6 +32,19 @@ public class NotificationController : ControllerBase
         };
 
         var result = await _mediator.Send(command);
+        return Ok(result);
+    }
+    
+    // GET: api/notification/{id}
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(Guid id)
+    {
+        var query = new GetNotificationQuery { Id = id };
+        var result = await _mediator.Send(query);
+        if (result == null)
+        {
+            return NotFound();
+        }
         return Ok(result);
     }
 

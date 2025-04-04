@@ -28,7 +28,7 @@ public class UpdateStockBulkCommandHandler : IRequestHandler<UpdateStockBulkComm
         {
             //check if product exists in stock
             var stock = await repository.GetByIdAsync(product.ProductId);
-            if (stock == null) continue;
+            if (stock == null || stock.Quantity == 0) continue;
             var stockUpdateEvent = new StockUpdateEvent()
             {
                 ProductId = product.ProductId,

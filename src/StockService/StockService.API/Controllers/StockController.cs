@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using StockService.API.Requests;
 using StockService.Application.Commands;
+using StockService.Application.Queries;
 
 namespace StockService.API.Controllers;
 
@@ -72,17 +73,15 @@ public class StockController : ControllerBase
         return result ? Ok() : NotFound();
     }
 
-    // GET: api/order/{id}
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
-        // var query = new GetOrderQuery { OrderId = id };
-        // var result = await _mediator.Send(query);
-        // if (result == null)
-        // {
-        //     return NotFound();
-        // }
-        // return Ok(result);
-        return Ok();
+        var query = new GetStockQuery { ProductId = id };
+        var result = await _mediator.Send(query);
+        if (result == null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
     }
 }

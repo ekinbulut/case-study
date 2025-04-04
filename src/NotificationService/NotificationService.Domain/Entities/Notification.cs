@@ -11,6 +11,7 @@ public class Notification
     public DateTime? ReadAt { get; set; } = null;
     public string? ErrorMessage { get; set; } = null;
     public NotificationStatus Status { get; set; } = NotificationStatus.Pending;
+    public DateTime UpdatedAt { get; set; }
 }
 
 public enum NotificationType

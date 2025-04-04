@@ -36,20 +36,22 @@ public class SendNotificationBackgroundService : BackgroundService
         await _eventBus.SubscribeAsync<NotificationCreatedEvent>(
             queueName: RabbitMqConstants.NotificationQueue,
             routingKey: RabbitMqConstants.NotificationRoutingKey,
-            onMessage: async (orderEvent) =>
+            onMessage: async (notificationCreatedEvent) =>
             {
-                _logger.LogInformation($"Received NotificationCreatedEvent for Id: {orderEvent.Id}");
+                _logger.LogInformation($"Received NotificationCreatedEvent for Id: {notificationCreatedEvent.Id}");
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork<NotificationDbContext>>();
                     var notificationRepository = unitOfWork.GetRepository<INotificationRepository>();
-                    var notification = await notificationRepository.GetByIdAsync(orderEvent.Id);
-                    notification.CreatedAt = DateTime.UtcNow; //TODO: change to UpdateAt
+                    var notification = await notificationRepository.GetByIdAsync(notificationCreatedEvent.Id);
+                    //TODO: send notification in here
+                    
+                    notification.UpdatedAt = DateTime.UtcNow;
                     notification.Status = NotificationStatus.Sent;
                     notificationRepository.Update(notification);
                     await unitOfWork.SaveChangesAsync();
                     
-                    var notificationCreatedEvent = new NotificationSentEvent()
+                    var notificationSentEvent = new NotificationSentEvent()
                     {
                         Id = notification.Id,
                         UserId = notification.CustomerId,
@@ -63,7 +65,7 @@ public class SendNotificationBackgroundService : BackgroundService
                         .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
                     await retryPolicy.ExecuteAsync(async () =>
 
-                        _eventBus.PublishAsync(notificationCreatedEvent, RabbitMqConstants.NotificationSentRoutingKey,
+                        _eventBus.PublishAsync(notificationSentEvent, RabbitMqConstants.NotificationSentRoutingKey,
                             RabbitMqConstants.NotificationSentQueue));
 
                 }
