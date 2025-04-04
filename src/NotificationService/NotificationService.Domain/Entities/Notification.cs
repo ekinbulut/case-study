@@ -3,7 +3,7 @@ namespace NotificationService.Domain.Entities;
 public class Notification
 {
     public Guid Id { get; set; }
-    public Guid UserId { get; set; }
+    public Guid CustomerId { get; set; }
     public string Message { get; set; } = string.Empty;
     public NotificationType NotificationType { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -16,7 +16,8 @@ public class Notification
 public enum NotificationType
 {
     OrderCreated,
-    OrderCompleted,
+    OrderConfirmed,
+    OrderCompleeted,
     OrderCancelled,
     OrderShipped,
     OrderDelivered,

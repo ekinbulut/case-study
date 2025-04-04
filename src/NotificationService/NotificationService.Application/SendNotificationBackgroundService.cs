@@ -12,7 +12,7 @@ using Polly;
 
 namespace NotificationService.Application;
 
-public class NotificationBackgroundService : BackgroundService
+public class SendNotificationBackgroundService : BackgroundService
 {
     private readonly ILogger<NotificationBackgroundService> _logger;
     private readonly EventBus _eventBus;
@@ -20,7 +20,7 @@ public class NotificationBackgroundService : BackgroundService
     
     private readonly IServiceScopeFactory _scopeFactory;
 
-    public NotificationBackgroundService(ILogger<NotificationBackgroundService> logger, EventBus eventBus,
+    public SendNotificationBackgroundService(ILogger<NotificationBackgroundService> logger, EventBus eventBus,
         IServiceScopeFactory scopeFactory)
     {
         _logger = logger;
@@ -33,34 +33,29 @@ public class NotificationBackgroundService : BackgroundService
         _logger.LogInformation("Stock background service is starting.");
 
         // Subscribe to the OrderCreatedEvent using the EventBus.
-        await _eventBus.SubscribeAsync<OrderConfirmedEvent>(
-            queueName: RabbitMqConstants.OrderConfirmedQueue,
-            routingKey: RabbitMqConstants.OrderConfirmedRoutingKey,
+        await _eventBus.SubscribeAsync<NotificationCreatedEvent>(
+            queueName: RabbitMqConstants.NotificationQueue,
+            routingKey: RabbitMqConstants.NotificationRoutingKey,
             onMessage: async (orderEvent) =>
             {
-                _logger.LogInformation($"Received OrderCreatedEvent for Order Id: {orderEvent.OrderId}");
+                _logger.LogInformation($"Received NotificationCreatedEvent for Id: {orderEvent.Id}");
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork<NotificationDbContext>>();
                     var notificationRepository = unitOfWork.GetRepository<INotificationRepository>();
-                    var notification = new Notification
-                    {
-                        Id = Guid.CreateVersion7(),
-                        CustomerId = orderEvent.CustomerId,
-                        NotificationType = NotificationType.OrderConfirmed,
-                        Message = "Your order has been confirmed.",
-                        Status = NotificationStatus.Pending
-                    };
-                    await notificationRepository.AddAsync(notification);
+                    var notification = await notificationRepository.GetByIdAsync(orderEvent.Id);
+                    notification.CreatedAt = DateTime.UtcNow; //TODO: change to UpdateAt
+                    notification.Status = NotificationStatus.Sent;
+                    notificationRepository.Update(notification);
                     await unitOfWork.SaveChangesAsync();
                     
-                    var notificationCreatedEvent = new NotificationCreatedEvent
+                    var notificationCreatedEvent = new NotificationSentEvent()
                     {
                         Id = notification.Id,
                         UserId = notification.CustomerId,
                         Message = notification.Message,
                         NotificationType = notification.NotificationType.ToString(),
-                        Status = notification.Status.ToString()
+                        Status = NotificationStatus.Sent.ToString()
                     };
         
                     var retryPolicy = Policy
@@ -68,8 +63,8 @@ public class NotificationBackgroundService : BackgroundService
                         .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
                     await retryPolicy.ExecuteAsync(async () =>
 
-                        _eventBus.PublishAsync(notificationCreatedEvent, RabbitMqConstants.NotificationRoutingKey,
-                            RabbitMqConstants.NotificationQueue));
+                        _eventBus.PublishAsync(notificationCreatedEvent, RabbitMqConstants.NotificationSentRoutingKey,
+                            RabbitMqConstants.NotificationSentQueue));
 
                 }
 

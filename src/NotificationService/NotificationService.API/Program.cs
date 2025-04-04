@@ -15,7 +15,6 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-
         builder.Services.AddCommonServices(builder.Configuration);
         
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(SendNotificationCommandHandler).Assembly));
@@ -27,6 +26,7 @@ public class Program
         builder.Services.AddScoped<IUnitOfWork<NotificationDbContext>, UnitOfWork<NotificationDbContext>>();
 
         builder.Services.AddHostedService<NotificationBackgroundService>();
+        builder.Services.AddHostedService<SendNotificationBackgroundService>();
         
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();

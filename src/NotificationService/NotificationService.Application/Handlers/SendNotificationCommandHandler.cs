@@ -26,45 +26,40 @@ public class SendNotificationCommandHandler : IRequestHandler<SendNotificationCo
 
     public async Task<NotificationResult> Handle(SendNotificationCommand request, CancellationToken cancellationToken)
     {
-        // Create a new Notification entity with initial values.
-        
-        var notification = new Notification
-        {
-            Id = Guid.CreateVersion7(),
-            UserId = request.UserId,
-            Message = request.Message,
-            NotificationType = ConvertStringToEnum(request.NotificationType) ?? NotificationType.OrderCreated,
-        };
-        
+        Notification? notification = null;
         // Persist the new notification.
         try
         {
             var notificationRepository = _unitOfWork.GetRepository<INotificationRepository>();
-            await notificationRepository.AddAsync(notification);
-            await _unitOfWork.SaveChangesAsync();
+            notification = await notificationRepository.GetByIdAsync(request.Id);
+            if (notification == null)
+            {
+                throw new NotFoundException($"Notification with ID {request.Id} not found.");
+            }
+            
+            // Publish NotificationCreatedEvent after successful save.
+            var notificationCreatedEvent = new NotificationCreatedEvent
+            {
+                Id = notification.Id,
+                UserId = notification.CustomerId,
+                Message = notification.Message,
+                NotificationType = notification.NotificationType.ToString(),
+                Status = notification.Status.ToString()
+            };
+        
+            var retryPolicy = Policy
+                .Handle<MessaagingException>()
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+            await retryPolicy.ExecuteAsync(async () =>
+
+                _eventBus.PublishAsync(notificationCreatedEvent, RabbitMqConstants.NotificationRoutingKey,
+                    RabbitMqConstants.NotificationQueue));
+            
         }
         catch (Exception ex)
         {
             throw new Exception("An error occurred while saving the notification. Please try again later.", ex);
         }
-        
-        // Publish NotificationCreatedEvent after successful save.
-        var notificationCreatedEvent = new NotificationCreatedEvent
-        {
-            Id = notification.Id,
-            UserId = notification.UserId,
-            Message = notification.Message,
-            NotificationType = notification.NotificationType.ToString(),
-            Status = notification.Status.ToString()
-        };
-        
-        var retryPolicy = Policy
-            .Handle<MessaagingException>()
-            .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
-        await retryPolicy.ExecuteAsync(async () =>
-
-            _eventBus.PublishAsync(notificationCreatedEvent, RabbitMqConstants.NotificationRoutingKey,
-                RabbitMqConstants.NotificationQueue));
         
         return new NotificationResult(){
             Id = notification.Id.ToString(),

@@ -37,9 +37,8 @@ public class OrderController : ControllerBase
             }).ToList()
         };
         
-
         var result = await _mediator.Send(command);
-        return CreatedAtAction(nameof(CreateOrderRequest), new { id = result.Id }, result);
+        return Ok(result);
     }
     
     // POST: api/order/complete

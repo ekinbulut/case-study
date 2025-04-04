@@ -70,7 +70,7 @@ public class CompleteOrderCommandHandler : IRequestHandler<CompleteOrderCommand,
         await retryPolicy.ExecuteAsync(async () =>
         {
             await _eventBus.PublishAsync(orderCompletedEvent, RabbitMqConstants.OrderConfirmedRoutingKey,
-                RabbitMqConstants.NotificationQueue);
+                RabbitMqConstants.OrderConfirmedQueue);
         });
         
         return result;

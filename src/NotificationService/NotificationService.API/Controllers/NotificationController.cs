@@ -27,9 +27,7 @@ public class NotificationController : ControllerBase
 
         var command = new SendNotificationCommand()
         {
-            UserId = request.UserId,
-            Message = request.Message,
-            NotificationType = request.NotificationType
+            Id = request.Id
         };
 
         var result = await _mediator.Send(command);
