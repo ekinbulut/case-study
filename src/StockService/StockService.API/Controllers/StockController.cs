@@ -28,7 +28,8 @@ public class StockController : ControllerBase
         var command = new CreateStockCommand()
         {
             ProductId = request.ProductId,
-            Quantity = request.Quantity
+            Quantity = request.Quantity,
+            Price = request.Price
         };
         
         await _mediator.Send(command);

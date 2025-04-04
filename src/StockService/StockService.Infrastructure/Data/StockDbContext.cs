@@ -9,7 +9,7 @@ namespace StockService.Infrastructure.Data
         {
         }
 
-        public DbSet<Stock> Orders { get; set; }
+        public DbSet<Stock> Stocks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,7 +23,7 @@ namespace StockService.Infrastructure.Data
                 // Additional configuration for the Order entity can be added here
             });
             
-            modelBuilder.Entity<StockItem>(entity =>
+            modelBuilder.Entity<Stock>(entity =>
             {
                 entity.HasKey(o => o.Id);
                 entity.Property(o => o.Id).ValueGeneratedOnAdd();

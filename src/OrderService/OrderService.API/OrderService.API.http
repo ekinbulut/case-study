@@ -7,9 +7,9 @@ Content-Type: application/json
   "customerId": "3f6cbc83-56ec-450b-b228-97f00539348f",
   "orderItems": [
     {
-      "productId": "97f00539-450b-b228-56ec-3f6cbc83348f",
+      "productId": "737186b5-e62c-4329-a64c-a4386fbdc6d7",
       "quantity": 2,
-      "unitPrice": 10.5
+      "unitPrice": 30.99
     }
   ]
 }

@@ -8,5 +8,5 @@ public class OrderCreatedEvent
     public DateTime OrderDate { get; set; }
     public string CustomerId { get; set; }
     public decimal TotalAmount { get; set; }
-    public List<StockItem> Items { get; set; }
+    public List<Stock> Items { get; set; }
 }

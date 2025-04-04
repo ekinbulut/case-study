@@ -1,8 +1,15 @@
 using System.ComponentModel;
+using Common.Exceptions;
+using Common.Infrastructure;
 using Common.Messaging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Polly;
+using StockService.Domain.Entities;
 using StockService.Domain.Events;
+using StockService.Domain.Interfaces;
+using StockService.Infrastructure.Data;
 
 namespace StockService.Application;
 
@@ -11,23 +18,68 @@ public class StockBackgroundService : BackgroundService
     private readonly ILogger<StockBackgroundService> _logger;
     private readonly EventBus _eventBus;
 
-    public StockBackgroundService(ILogger<StockBackgroundService> logger, EventBus eventBus)
+    
+    private readonly IServiceScopeFactory _scopeFactory;
+
+    public StockBackgroundService(ILogger<StockBackgroundService> logger, EventBus eventBus,
+        IServiceScopeFactory scopeFactory)
     {
         _logger = logger;
         _eventBus = eventBus;
+        _scopeFactory = scopeFactory;
     }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Stock background service is starting.");
 
         // Subscribe to the OrderCreatedEvent using the EventBus.
         await _eventBus.SubscribeAsync<OrderCreatedEvent>(
-            queueName: RabbitMqConstants.StockQueue,
+            queueName: RabbitMqConstants.OrderQueue,
             routingKey: RabbitMqConstants.OrderCreatedRoutingKey,
             onMessage: async (orderEvent) =>
             {
                 _logger.LogInformation($"Received OrderCreatedEvent for Order Id: {orderEvent.OrderId}");
                 // TODO: Process the event.
+
+                //check if orderEvent items are exists
+                foreach (var item in orderEvent.Items)
+                {
+                    
+                    using (var scope = _scopeFactory.CreateScope())
+                    {
+                        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork<StockDbContext>>();
+
+                        //check if item exists in stock
+                        var repository = unitOfWork.GetRepository<IStockRepository>();
+                        var stock = await repository.GetByIdAsync(item.ProductId);
+                        if(stock == null) continue;
+
+                        //update the stock
+                        stock.Quantity -= item.Quantity;
+                        stock.UpdatedAt = DateTime.UtcNow;
+                        repository.Update(stock);
+                        // Use unitOfWork here
+                        await unitOfWork.SaveChangesAsync();
+                    
+                        var retryPolicy = Policy
+                            .Handle<MessaagingException>()
+                            .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
+                        await retryPolicy.ExecuteAsync(async () =>
+                        {
+                            await _eventBus.PublishAsync(new StockUpdatedEvent()
+                            {
+                                ProductId = item.ProductId,
+                                Quantity = stock.Quantity,
+                                UnitPrice = stock.UnitPrice,
+                                CreatedAt = DateTime.Now,
+                            }, RabbitMqConstants.StockUpdatedRoutingKey, RabbitMqConstants.StockQueue);
+                        });
+                        
+                    }
+                }
+
                 await Task.CompletedTask;
             });
 

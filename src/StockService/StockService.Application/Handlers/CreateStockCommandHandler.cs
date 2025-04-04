@@ -20,15 +20,10 @@ public class CreateStockCommandHandler : IRequestHandler<CreateStockCommand>
     {
         var stock = new Domain.Entities.Stock
         {
-            Items = new List<Domain.Entities.StockItem>()
-            {
-                new Domain.Entities.StockItem
-                {
-                    ProductId = request.ProductId,
-                    Quantity = request.Quantity
-                }
-            },
-            CreatedAt = DateTime.Now,
+            ProductId = request.ProductId,
+            Quantity = request.Quantity,
+            UnitPrice = request.Price,
+            CreatedAt = DateTime.UtcNow,
         };
         
         try
@@ -36,6 +31,7 @@ public class CreateStockCommandHandler : IRequestHandler<CreateStockCommand>
             // Persist the new order.
             var repository = _unitOfWork.GetRepository<IStockRepository>();
             await repository.AddAsync(stock);
+            await _unitOfWork.SaveChangesAsync();
         }
         catch (DbUpdateException ex)
         {

@@ -1,11 +1,9 @@
-namespace StockService.Domain.Entities;
+namespace StockService.Domain.Events;
 
-public class Stock
+public class StockUpdatedEvent
 {
-    public Guid Id { get; set; }
     public Guid ProductId { get; set; }
     public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }
     public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
 }

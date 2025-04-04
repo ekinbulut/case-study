@@ -105,19 +105,25 @@ namespace Common.Messaging
             var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.ReceivedAsync += async (model, ea) =>
             {
-                var body = ea.Body.ToArray();
-                var message = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(body));
+                if (ea.RoutingKey == routingKey)
+                {
+                    var body = ea.Body.ToArray();
+                    var message = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(body));
 
-                // Process the received message.
-                await onMessage(message);
+                    // Process the received message.
+                    await onMessage(message);
 
-                // Acknowledge the message.
-                //await _channel.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false);
+                    // Acknowledge the message.
+                    await _channel.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false);
+                }
+
+                await _channel.BasicNackAsync(deliveryTag: ea.DeliveryTag, multiple: false, requeue: true);
             };
 
             // Start consuming the queue.
             await _channel.BasicConsumeAsync(queue: queueName, autoAck: false, consumer: consumer);
         }
+
         public async ValueTask DisposeAsync()
         {
             await _channel.CloseAsync();

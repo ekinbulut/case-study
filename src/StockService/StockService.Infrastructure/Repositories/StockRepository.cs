@@ -16,26 +16,26 @@ public class StockRepository : IStockRepository
         
     public async Task<Stock> GetByIdAsync(Guid id)
     {
-        return await _context.Orders.Include(o=> o.Items).FirstOrDefaultAsync(o => o.Id == id);
+        return await _context.Stocks.FirstOrDefaultAsync(o => o.ProductId == id);
     }
 
     public async Task<IEnumerable<Stock>> GetAllAsync()
     {
-        return await _context.Orders.ToListAsync();
+        return await _context.Stocks.ToListAsync();
     }
 
     public async Task AddAsync(Stock order)
     {
-        await _context.Orders.AddAsync(order);
+        await _context.Stocks.AddAsync(order);
     }
 
     public void Update(Stock order)
     {
-        _context.Orders.Update(order);
+        _context.Stocks.Update(order);
     }
 
     public void Delete(Stock order)
     {
-        _context.Orders.Remove(order);
+        _context.Stocks.Remove(order);
     }
 }
