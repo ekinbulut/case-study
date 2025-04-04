@@ -20,7 +20,7 @@ public class OrderController : ControllerBase
 
     // POST: api/order
     [HttpPost]
-    public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
+    public async Task<IActionResult> Post([FromBody] CreateOrderRequest request)
     {
         if (request == null)
         {
@@ -39,12 +39,30 @@ public class OrderController : ControllerBase
         
 
         var result = await _mediator.Send(command);
-        return CreatedAtAction(nameof(GetOrderById), new { id = result.Id }, result);
+        return CreatedAtAction(nameof(CreateOrderRequest), new { id = result.Id }, result);
+    }
+    
+    // POST: api/order/complete
+    [HttpPost("complete")]
+    public async Task<IActionResult> Put([FromBody] CompleteOrderRequest request)
+    {
+        if (request == null)
+        {
+            return BadRequest();
+        }
+
+        var command = new CompleteOrderCommand()
+        {
+            OrderId = request.OrderId
+        };
+
+        var result = await _mediator.Send(command);
+        return Ok(result);
     }
 
     // GET: api/order/{id}
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetOrderById(Guid id)
+    public async Task<IActionResult> Get(Guid id)
     {
         var query = new GetOrderQuery { OrderId = id };
         var result = await _mediator.Send(query);
