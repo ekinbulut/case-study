@@ -1,23 +1,29 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 5067
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["OrderService.API/OrderService.API.csproj", "OrderService.API/"]
-RUN dotnet restore "OrderService.API/OrderService.API.csproj"
-COPY . .
-WORKDIR "/src/OrderService.API"
-RUN dotnet build "OrderService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+COPY ["src/StockService/StockService.API/StockService.API.csproj", "StockService.API/"]
+COPY ["src/StockService/StockService.Domain/StockService.Domain.csproj", "StockService.Domain/"]
+COPY ["src/StockService/StockService.Infrastructure/StockService.Infrastructure.csproj", "StockService.Infrastructure/"]
+COPY ["src/StockService/StockService.Application/StockService.Application.csproj", "StockService.Application/"]
+COPY ["src/Common/Common/Common.csproj", "/Common/Common/"]
+
+RUN dotnet restore "StockService.API/StockService.API.csproj"
+# Copy the entire project files
+COPY src/StockService/ StockService/
+COPY src/Common/ Common/
+
+WORKDIR "/src/StockService/StockService.API"
+RUN dotnet build "StockService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "OrderService.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "StockService.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=true
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "OrderService.API.dll"]
+ENTRYPOINT ["dotnet", "StockService.API.dll"]

@@ -24,11 +24,6 @@ public class UpdateStockCommandHandler : IRequestHandler<UpdateStockCommand, boo
         {
             try
             {
-                if(stock.Quantity < request.Quantity)
-                {
-                    // Handle insufficient stock case
-                    return false;
-                }
                 stock.Quantity = request.Quantity;
                 stock.UpdatedAt = DateTime.UtcNow;
                 repository.Update(stock);

@@ -34,9 +34,11 @@ public class Program
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
-            app.MapScalarApiReference();
         }
 
+        app.MapScalarApiReference();
+
+        
         app.UseErrorHandlingMiddleware();
         app.UseRequestLogging();
 

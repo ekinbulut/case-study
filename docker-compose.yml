@@ -1,25 +1,29 @@
 services:
-  # order-service:
-  #   build: ./OrderService
-  #   ports:
-  #     - "5001:80"
-  #   environment:
-  #     - ConnectionStrings__DefaultConnection=Host=order-db;Database=OrderDB;Username=postgres;Password=yourpassword
-  #     - RabbitMQ__Host=rabbitmq
-  #   depends_on:
-  #     - order-db
-  #     - rabbitmq
+  order-service:
+    build:
+      context: .  # The root directory containing all projects
+      dockerfile: src/OrderService/OrderService.API/Dockerfile
+    ports:
+      - "5066:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=order-db;Database=OrderDB;Username=postgres;Password=yourpassword
+      - RabbitMQ__Host=rabbitmq
+    depends_on:
+      - order-db
+      - rabbitmq
 
-  # stock-service:
-  #   build: ./StockService
-  #   ports:
-  #     - "5002:80"
-  #   environment:
-  #     - ConnectionStrings__DefaultConnection=Host=stock-db;Database=StockDB;Username=postgres;Password=yourpassword
-  #     - RabbitMQ__Host=rabbitmq
-  #   depends_on:
-  #     - stock-db
-  #     - rabbitmq
+  stock-service:
+    build:
+      context: .  # The root directory containing all projects
+      dockerfile: src/StockService/StockService.API/Dockerfile
+    ports:
+      - "5067:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=stock-db;Database=StockDB;Username=postgres;Password=yourpassword
+      - RabbitMQ__Host=rabbitmq
+    depends_on:
+      - stock-db
+      - rabbitmq
 
   # notification-service:
   #   build: ./NotificationService
@@ -33,11 +37,11 @@ services:
   #     - rabbitmq
 
   rabbitmq:
+    container_name: rabbitmq
     image: rabbitmq:3-management
     ports:
       - "5672:5672"
       - "15672:15672"
-    network_mode: bridge
 
   order-db:
     image: postgres:13
@@ -47,7 +51,6 @@ services:
       - POSTGRES_DB=OrderDB
     ports:
       - "5433:5432"
-    network_mode: bridge
 
   stock-db:
     image: postgres:13
@@ -57,7 +60,6 @@ services:
       - POSTGRES_DB=StockDB
     ports:
       - "5434:5432"
-    network_mode: bridge
 
   notification-db:
     image: postgres:13
