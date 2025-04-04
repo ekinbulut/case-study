@@ -67,6 +67,7 @@ services:
       - POSTGRES_DB=NotificationDB
     ports:
       - "5435:5432"
+    network_mode: bridge
   orderservice.api:
     image: orderservice.api
     build:

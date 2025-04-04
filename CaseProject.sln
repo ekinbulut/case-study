@@ -12,9 +12,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Domain", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Infrastructure", "src\OrderService\OrderService.Infrastructure\OrderService.Infrastructure.csproj", "{C3C4F4AC-F94B-43DE-8189-B002233D7D2C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{4797416C-8D9E-4449-BB7A-8F187FD22CF2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "src\Common", "{4797416C-8D9E-4449-BB7A-8F187FD22CF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common\Common.csproj", "{CB5C0A41-1872-411B-9703-E57321106373}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "src\Common\Common\Common.csproj", "{CB5C0A41-1872-411B-9703-E57321106373}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StockService", "StockService", "{C66207BC-8B86-467B-909D-83DFE7F69942}"
 EndProject
@@ -25,6 +25,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockService.Infrastructure", "src\StockService\StockService.Infrastructure\StockService.Infrastructure.csproj", "{DE5A9970-B72D-4160-A930-6274B53D292F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockService.Application", "src\StockService\StockService.Application\StockService.Application.csproj", "{33DC8AEC-4A14-4685-A6A2-4B6CC87539DF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NotificationService", "NotificationService", "{7CB23068-F0F3-41FA-959D-AB02BCA0CF90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.Domain", "src\NotificationService\NotificationService.Domain\NotificationService.Domain.csproj", "{194292E0-9B0E-4B54-A1A7-39C980B1434D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.Infrastructure", "src\NotificationService\NotificationService.Infrastructure\NotificationService.Infrastructure.csproj", "{C9EB2505-0F35-4348-8CDA-DF7785D107F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.Application", "src\NotificationService\NotificationService.Application\NotificationService.Application.csproj", "{40E6D832-1887-4C63-B245-D6D251778C8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.API", "src\NotificationService\NotificationService.API\NotificationService.API.csproj", "{DF376BCC-38C5-4AF9-AB97-EEF681AE0842}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +54,11 @@ Global
 		{BA189B13-E65D-4311-A082-A84A9A68EEAB} = {C66207BC-8B86-467B-909D-83DFE7F69942}
 		{DE5A9970-B72D-4160-A930-6274B53D292F} = {C66207BC-8B86-467B-909D-83DFE7F69942}
 		{33DC8AEC-4A14-4685-A6A2-4B6CC87539DF} = {C66207BC-8B86-467B-909D-83DFE7F69942}
+		{7CB23068-F0F3-41FA-959D-AB02BCA0CF90} = {8B0A530E-BC47-47B1-93CE-4F729D978227}
+		{194292E0-9B0E-4B54-A1A7-39C980B1434D} = {7CB23068-F0F3-41FA-959D-AB02BCA0CF90}
+		{C9EB2505-0F35-4348-8CDA-DF7785D107F4} = {7CB23068-F0F3-41FA-959D-AB02BCA0CF90}
+		{40E6D832-1887-4C63-B245-D6D251778C8D} = {7CB23068-F0F3-41FA-959D-AB02BCA0CF90}
+		{DF376BCC-38C5-4AF9-AB97-EEF681AE0842} = {7CB23068-F0F3-41FA-959D-AB02BCA0CF90}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F65E727C-EF19-47B0-9A28-0FEA8F569B19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -82,5 +97,21 @@ Global
 		{33DC8AEC-4A14-4685-A6A2-4B6CC87539DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33DC8AEC-4A14-4685-A6A2-4B6CC87539DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33DC8AEC-4A14-4685-A6A2-4B6CC87539DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{194292E0-9B0E-4B54-A1A7-39C980B1434D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{194292E0-9B0E-4B54-A1A7-39C980B1434D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{194292E0-9B0E-4B54-A1A7-39C980B1434D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{194292E0-9B0E-4B54-A1A7-39C980B1434D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9EB2505-0F35-4348-8CDA-DF7785D107F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9EB2505-0F35-4348-8CDA-DF7785D107F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9EB2505-0F35-4348-8CDA-DF7785D107F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9EB2505-0F35-4348-8CDA-DF7785D107F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40E6D832-1887-4C63-B245-D6D251778C8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40E6D832-1887-4C63-B245-D6D251778C8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40E6D832-1887-4C63-B245-D6D251778C8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40E6D832-1887-4C63-B245-D6D251778C8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF376BCC-38C5-4AF9-AB97-EEF681AE0842}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF376BCC-38C5-4AF9-AB97-EEF681AE0842}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF376BCC-38C5-4AF9-AB97-EEF681AE0842}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF376BCC-38C5-4AF9-AB97-EEF681AE0842}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -28,8 +28,13 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common\Common.csproj" />
-      <ProjectReference Include="..\OrderService.Application\OrderService.Application.csproj" />
-      <ProjectReference Include="..\OrderService.Infrastructure\OrderService.Infrastructure.csproj" />
+      <ProjectReference Include="..\NotificationService.Application\NotificationService.Application.csproj" />
+      <ProjectReference Include="..\NotificationService.Infrastructure\NotificationService.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Controllers\" />
+      <Folder Include="Requests\" />
     </ItemGroup>
 
 </Project>
