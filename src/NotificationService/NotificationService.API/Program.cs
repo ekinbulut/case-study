@@ -1,6 +1,7 @@
 using Common.Extensions;
 using Common.Infrastructure;
 using NotificationService.Application;
+using NotificationService.Application.Handlers;
 using NotificationService.Domain.Interfaces;
 using NotificationService.Infrastructure.Data;
 using NotificationService.Infrastructure.Repositories;
@@ -17,7 +18,7 @@ public class Program
 
         builder.Services.AddCommonServices(builder.Configuration);
         
-        //builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateStockCommandHandler).Assembly));
+        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(SendNotificationCommandHandler).Assembly));
         builder.Services.AddEntityFramework<NotificationDbContext>(builder.Configuration);
 
         builder.Services.AddControllers();

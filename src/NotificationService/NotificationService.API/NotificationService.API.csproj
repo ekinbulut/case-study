@@ -32,9 +32,4 @@
       <ProjectReference Include="..\NotificationService.Infrastructure\NotificationService.Infrastructure.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Controllers\" />
-      <Folder Include="Requests\" />
-    </ItemGroup>
-
 </Project>
