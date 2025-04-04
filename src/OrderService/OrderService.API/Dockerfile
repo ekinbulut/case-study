@@ -27,3 +27,9 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "OrderService.API.dll"]
+
+COPY wait-for-it.sh /wait-for-it.sh
+
+RUN chmod +x /wait-for-it.sh
+
+ENTRYPOINT ["/wait-for-it.sh", "order-db:5432", "--","/wait-for-it.sh", "rabbitmq:5672", "--", "dotnet", "OrderService.API.dll"]

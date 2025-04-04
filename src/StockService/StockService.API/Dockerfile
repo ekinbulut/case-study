@@ -26,4 +26,9 @@ RUN dotnet publish "StockService.API.csproj" -c $BUILD_CONFIGURATION -o /app/pub
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "StockService.API.dll"]
+
+COPY wait-for-it.sh /wait-for-it.sh
+
+RUN chmod +x /wait-for-it.sh
+
+ENTRYPOINT ["/wait-for-it.sh", "stock-db:5432", "--","/wait-for-it.sh", "rabbitmq:5672", "--", "dotnet", "StockService.API.dll"]

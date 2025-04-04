@@ -26,4 +26,10 @@ RUN dotnet publish "NotificationService.API.csproj" -c $BUILD_CONFIGURATION -o /
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "NotificationService.API.dll"]
+
+COPY wait-for-it.sh /wait-for-it.sh
+
+RUN chmod +x /wait-for-it.sh
+
+ENTRYPOINT ["/wait-for-it.sh", "notification-db:5432", "--","/wait-for-it.sh", "rabbitmq:5672", "--", "dotnet", "NotificationService.API.dll"]
+
