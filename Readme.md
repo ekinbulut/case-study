@@ -121,6 +121,34 @@ This diagram illustrates the architecture of the Notification API system, where:
 - The message queue (`MQ`) consists of three queues: `order-queue-confirmed`, `notification-queue`, and `notification-sent`.
 - Background services (`NotificationBackgroundService` and `SendNotificationBackgroundService`) process and update the data in the `Notification DB`.
 
+## Flow
+1. The `Order API` receives a request to create an order.
+Sample request: `POST api/v1/order`
+```json
+{
+  "customerId": "0196059f-aa3b-7d6e-be8d-d52256eb4e38",
+  "orderItems": [
+    {
+      "productId": "a9a11000-2f6f-4a62-8d5f-d24a9eaadadf",
+      "quantity": 1,
+      "unitPrice": 100
+    }
+  ]
+}
+```
+2. The `Order API` inserts the order into the database and publishes an event to the `order.created` queue.
+3. To send a notification the order should be completed by calling the `PUT api/v1/order/complete` endpoint.
+Sample request:
+```json
+{
+  "orderId": "0196059f-cba8-75de-9940-8148b9bfa447"
+}
+```
+4. You will see the an event in the `order-queue-confirmed` queue.
+5. The notification service will pick up the event and send a notification to the user.
+6. The notification will be stored in the database and will publish an event to the `notification-sent` queue.
+7. Also stock will be updated in the `Stock API` when the order is has created.
+
 ## Pre-requisites
 - Docker
 - Docker Compose
