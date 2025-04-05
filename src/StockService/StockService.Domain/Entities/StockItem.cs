@@ -8,4 +8,5 @@ public class Stock
     public decimal UnitPrice { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public string Name { get; set; }
 }
