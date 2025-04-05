@@ -3,6 +3,7 @@ using Common.Infrastructure;
 using Common.Messaging;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NotificationService.Application.Commands;
 using NotificationService.Application.DTOs;
 using NotificationService.Domain.Entities;
@@ -15,13 +16,15 @@ namespace NotificationService.Application.Handlers;
 
 public class SendNotificationCommandHandler : IRequestHandler<SendNotificationCommand, NotificationResult>
 {
+    private ILogger<SendNotificationCommandHandler> _logger;
     private readonly IUnitOfWork<NotificationDbContext> _unitOfWork;
     private readonly EventBus _eventBus;
 
-    public SendNotificationCommandHandler(EventBus eventBus, IUnitOfWork<NotificationDbContext> unitOfWork)
+    public SendNotificationCommandHandler(EventBus eventBus, IUnitOfWork<NotificationDbContext> unitOfWork, ILogger<SendNotificationCommandHandler> logger)
     {
         _eventBus = eventBus;
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public async Task<NotificationResult> Handle(SendNotificationCommand request, CancellationToken cancellationToken)
@@ -30,6 +33,7 @@ public class SendNotificationCommandHandler : IRequestHandler<SendNotificationCo
         // Persist the new notification.
         try
         {
+            _logger.LogDebug($"SendNotificationCommandHandler: {request.Id}");
             var notificationRepository = _unitOfWork.GetRepository<INotificationRepository>();
             notification = await notificationRepository.GetByIdAsync(request.Id);
             if (notification == null)
@@ -37,6 +41,7 @@ public class SendNotificationCommandHandler : IRequestHandler<SendNotificationCo
                 throw new NotFoundException($"Notification with ID {request.Id} not found.");
             }
             
+            _logger.LogDebug($"SendNotificationCommandHandler: Publish notification {request.Id}");
             // Publish NotificationCreatedEvent after successful save.
             var notificationCreatedEvent = new NotificationCreatedEvent
             {
@@ -51,7 +56,6 @@ public class SendNotificationCommandHandler : IRequestHandler<SendNotificationCo
                 .Handle<MessaagingException>()
                 .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
             await retryPolicy.ExecuteAsync(async () =>
-
                 _eventBus.PublishAsync(notificationCreatedEvent, RabbitMqConstants.NotificationRoutingKey,
                     RabbitMqConstants.NotificationQueue));
             
@@ -65,14 +69,5 @@ public class SendNotificationCommandHandler : IRequestHandler<SendNotificationCo
             Id = notification.Id.ToString(),
             Status = notification.Status.ToString()
         };
-    }
-    
-    public static NotificationType? ConvertStringToEnum(string type)
-    {
-        if (Enum.TryParse<NotificationType>(type, true, out var result))
-        {
-            return result;
-        }
-        return null; // Or handle the error as you wish
     }
 }
