@@ -59,6 +59,19 @@ namespace NotificationService.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Notifications");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("7b9a4f19-4f8b-4a6e-b1f1-b67af72f832d"),
+                            CreatedAt = new DateTime(2025, 4, 5, 12, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = new Guid("01960585-7fb7-7e7d-a31c-1b2eb1681b22"),
+                            IsRead = false,
+                            Message = "This is a test notification",
+                            NotificationType = 0,
+                            Status = 0,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 #pragma warning restore 612, 618
         }
