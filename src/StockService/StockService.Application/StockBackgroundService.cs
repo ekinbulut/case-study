@@ -78,6 +78,7 @@ public class StockBackgroundService : BackgroundService
                                 Quantity = item.Quantity,
                                 UnitPrice = item.UnitPrice,
                                 CreatedAt = DateTime.UtcNow,
+                                OrderId = orderEvent.OrderId
                             }, RabbitMqConstants.StockUpdatedRoutingKey, RabbitMqConstants.StockQueueUpdated);
                         });
                         

@@ -1,4 +1,4 @@
-namespace StockService.Domain.Events;
+namespace OrderService.Domain.Events;
 
 public class StockUpdatedEvent
 {
@@ -7,4 +7,5 @@ public class StockUpdatedEvent
     public decimal UnitPrice { get; set; }
     public DateTime CreatedAt { get; set; }
     public Guid OrderId { get; set; }
+
 }

@@ -1,5 +1,6 @@
 using Common.Extensions;
 using Common.Infrastructure;
+using OrderService.Application;
 using OrderService.Application.Handlers;
 using OrderService.Domain.Interfaces;
 using OrderService.Infrastructure.Data;
@@ -25,6 +26,9 @@ public class Program
 
         builder.Services.AddTransient<IOrderRepository, OrderRepository>();
         builder.Services.AddScoped<IUnitOfWork<OrderDbContext>, UnitOfWork<OrderDbContext>>();
+        
+        builder.Services.AddHostedService<OrderConfirmBackgroundService>();
+
         
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
