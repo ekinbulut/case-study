@@ -30,7 +30,8 @@ public class StockController : ControllerBase
         {
             ProductId = request.ProductId,
             Quantity = request.Quantity,
-            Price = request.Price
+            Price = request.Price,
+            Name = request.Name
         };
         
         await _mediator.Send(command);

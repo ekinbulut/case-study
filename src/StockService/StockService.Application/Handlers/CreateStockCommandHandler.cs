@@ -24,6 +24,7 @@ public class CreateStockCommandHandler : IRequestHandler<CreateStockCommand>
             Quantity = request.Quantity,
             UnitPrice = request.Price,
             CreatedAt = DateTime.UtcNow,
+            Name = request.Name
         };
         
         try

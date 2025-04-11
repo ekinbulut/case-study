@@ -30,7 +30,8 @@ public class GetStockQueryHandler : IRequestHandler<GetStockQuery, StockResult>
             Quantity = stock.Quantity,
             Price = stock.UnitPrice,
             CreatedAt = stock.CreatedAt,
-            UpdatedAt = stock.UpdatedAt
+            UpdatedAt = stock.UpdatedAt,
+            Name = stock.Name
         };
     }
 }
