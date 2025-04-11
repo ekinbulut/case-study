@@ -26,7 +26,6 @@ RUN dotnet publish "OrderService.API.csproj" -c $BUILD_CONFIGURATION -o /app/pub
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "OrderService.API.dll"]
 
 COPY wait-for-it.sh /wait-for-it.sh
 
